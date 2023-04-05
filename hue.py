@@ -15,7 +15,7 @@ class Hue:
     def set_stand_tunnel(self, tunnel, stand):
         for l in range(1, lights_in_tunnel_1 + 1):
             if(self.auto_mode[Hue.get_light_name(tunnel, l)] == 0):
-                self.set_stand_light(tunnel, l, stand)
+                self.set_stand_light(tunnel, l, stand) 
 
     def set_stand_light(self, tunnel, light, stand):
         name = Hue.get_light_name(tunnel, light)
