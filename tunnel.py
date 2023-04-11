@@ -245,11 +245,11 @@ getRegisters2 = {
 }
 
 try:
-    print("Starting Modbus server and connecting to Hue bridge...")
+    print("Server: Starting Modbus server and connecting to Hue bridge...")
     server.start()
-    print("Modbus server online.")
+    print("Server: Modbus server online.")
     hue = Hue(config.ipHue)
-    print("Connected to Hue bridge")
+    print("Server: Connected to Hue bridge")
 
     groupSetStandOld1 = None
     groupSetStandOld2 = None
@@ -260,7 +260,7 @@ try:
             for key, value in value.items():
                 current = server.data_bank.get_holding_registers(value['reg'], 1)
                 if value['old'] != current:
-                    print(f"T1 Value of {device}:{key} changed to {current}")
+                    print(f"Tunnel 1: Value of {device}:{key} changed to {current}")
                     value['old'] = current
                     if key == 'setStand':
                         hue.set_stand_light(1, device, current[0])
@@ -269,7 +269,7 @@ try:
 
         groupSetStand = server.data_bank.get_holding_registers(42000, 1)
         if groupSetStand != groupSetStandOld1:
-            print("T1 Value of groupSetStand changed to: ", groupSetStand)
+            print("Tunnel 1: Value of groupSetStand changed to: ", groupSetStand)
             hue.set_stand_tunnel(1, groupSetStand[0])
             groupSetStandOld1 = groupSetStand
 
@@ -278,7 +278,7 @@ try:
                 if value == 'Niveau':
                     x = hue.get_stand(1, device)
                     if x != properties['old']:
-                        print(f"T1 Setting {device}:{value} to {x}")
+                        print(f"Tunnel 1: Setting {device}:{value} to {x}")
                         server.data_bank.set_holding_registers(properties['addr'], [x])
                         properties['old'] = x;
 
@@ -286,7 +286,7 @@ try:
             for key, value in value.items():
                 current = server.data_bank.get_holding_registers(value['reg'], 1)
                 if value['old'] != current:
-                    print(f"Value of {device}:{key} changed to {current}")
+                    print(f"Tunnel 2: Value of {device}:{key} changed to {current}")
                     value['old'] = current
                     if key == 'setStand':
                         hue.set_stand_light(2, device, current[0])
@@ -295,7 +295,7 @@ try:
 
         groupSetStand = server.data_bank.get_holding_registers(44000, 1)
         if groupSetStand != groupSetStandOld2:
-            print("T2: Value of groupSetStand changed to: ", groupSetStand)
+            print("Tunnel 2: Value of groupSetStand changed to: ", groupSetStand)
             hue.set_stand_tunnel(2, groupSetStand[0])
             groupSetStandOld2 = groupSetStand
 
@@ -304,16 +304,16 @@ try:
                 if value == 'Niveau':
                     x = hue.get_stand(2, device)
                     if x != properties['old']:
-                        print(f"T2: Setting {device}:{value} to {x}")
+                        print(f"Tunnel 2: Setting {device}:{value} to {x}")
                         server.data_bank.set_holding_registers(properties['addr'], [x])
                         properties['old'] = x;
 
 except KeyboardInterrupt:
-    print("Shutting down Modbus server...")
+    print("Server: Shutting down Modbus server...")
     server.stop()
-    print("Modbus server offline.")
+    print("Server: Modbus server offline.")
 except Exception as e:
     print(e)
-    print("Shutting down Modbus server...")
+    print("Server: Shutting down Modbus server...")
     server.stop()
-    print("Modbus server offline.")
+    print("Server: Modbus server offline.")
