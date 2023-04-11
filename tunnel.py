@@ -1,9 +1,10 @@
 from pyModbusTCP.server import ModbusServer
 from hue import Hue
+import config
 
 # Create instance of ModbusServer, with no block set to true
 # the server doesn't block the program from executing further
-server = ModbusServer("192.168.69.102", 502, no_block=True)
+server = ModbusServer(config.ipPi, 502, no_block=True)
 
 # Get Hue bridge at the right ip address
 
@@ -247,7 +248,7 @@ try:
     print("Starting Modbus server and connecting to Hue bridge...")
     server.start()
     print("Modbus server online.")
-    hue = Hue("192.168.69.101")
+    hue = Hue(config.ipHue)
     print("Connected to Hue bridge")
 
     groupSetStandOld1 = None
