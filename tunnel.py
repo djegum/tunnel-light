@@ -259,7 +259,7 @@ try:
             for key, value in value.items():
                 current = server.data_bank.get_holding_registers(value['reg'], 1)
                 if value['old'] != current:
-                    print(f"Value of {device}:{key} changed to {current}")
+                    print(f"T1 Value of {device}:{key} changed to {current}")
                     value['old'] = current
                     if key == 'setStand':
                         hue.set_stand_light(1, device, current[0])
@@ -268,7 +268,7 @@ try:
 
         groupSetStand = server.data_bank.get_holding_registers(42000, 1)
         if groupSetStand != groupSetStandOld1:
-            print("Value of groupSetStand changed to: ", groupSetStand)
+            print("T1 Value of groupSetStand changed to: ", groupSetStand)
             hue.set_stand_tunnel(1, groupSetStand[0])
             groupSetStandOld1 = groupSetStand
 
@@ -277,7 +277,7 @@ try:
                 if value == 'Niveau':
                     x = hue.get_stand(1, device)
                     if x != properties['old']:
-                        print(f"Setting {device}:{value} to {x}")
+                        print(f"T1 Setting {device}:{value} to {x}")
                         server.data_bank.set_holding_registers(properties['addr'], [x])
                         properties['old'] = x;
 
@@ -294,7 +294,7 @@ try:
 
         groupSetStand = server.data_bank.get_holding_registers(44000, 1)
         if groupSetStand != groupSetStandOld2:
-            print("Value of groupSetStand changed to: ", groupSetStand)
+            print("T2: Value of groupSetStand changed to: ", groupSetStand)
             hue.set_stand_tunnel(2, groupSetStand[0])
             groupSetStandOld2 = groupSetStand
 
@@ -303,7 +303,7 @@ try:
                 if value == 'Niveau':
                     x = hue.get_stand(2, device)
                     if x != properties['old']:
-                        print(f"Setting {device}:{value} to {x}")
+                        print(f"T2: Setting {device}:{value} to {x}")
                         server.data_bank.set_holding_registers(properties['addr'], [x])
                         properties['old'] = x;
 
