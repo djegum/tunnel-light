@@ -3,11 +3,11 @@ from hue import Hue
 
 # Create instance of ModbusServer, with no block set to true
 # the server doesn't block the program from executing further
-server = ModbusServer("127.0.0.1", 502, no_block=True)
+server = ModbusServer("192.168.69.102", 502, no_block=True)
 
 # Get Hue bridge at the right ip address
 
-setRegisters = {
+setRegisters1 = {
     '1': {
         'setStand':{
             'old': None,
@@ -80,7 +80,7 @@ setRegisters = {
     }
 }
 
-getRegisters = {
+getRegisters1 = {
     '1':{
         'Niveau': {
             'addr': 43002,
@@ -125,18 +125,137 @@ getRegisters = {
     }
 }
 
+setRegisters2 = {
+    '1': {
+        'setStand':{
+            'old': None,
+            'reg': 45000
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45001
+        }
+    },
+    '2': {
+        'setStand':{
+            'old': None,
+            'reg': 45006
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45007
+        }
+    },
+    '3': {
+        'setStand':{
+            'old': None,
+            'reg': 45012
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45013
+        }
+    },
+    '4': {
+        'setStand':{
+            'old': None,
+            'reg': 45018
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45019
+        }
+    },
+    '5': {
+        'setStand':{
+            'old': None,
+            'reg': 45024
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45025
+        }
+    },
+    '6': {
+        'setStand':{
+            'old': None,
+            'reg': 45030
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45031
+        }
+    },
+    '7': {
+        'setStand':{
+            'old': None,
+            'reg': 45036
+        },
+        'setAuto':{
+            'old': None,
+            'reg': 45037
+        }
+    }
+}
+
+getRegisters2 = {
+    '1':{
+        'Niveau': {
+            'addr': 45002,
+            'old': None
+        },
+    },
+    '2':{
+        'Niveau': {
+            'addr': 45008,
+            'old': None
+        },
+    },
+    '3':{
+        'Niveau': {
+            'addr': 45014,
+            'old': None
+        },
+    },
+    '4':{
+        'Niveau': {
+            'addr': 45020,
+            'old': None
+        },
+    },
+    '5':{
+        'Niveau': {
+            'addr': 45026,
+            'old': None
+        },
+    },
+    '6':{
+        'Niveau': {
+            'addr': 45032,
+            'old': None
+        },
+    },
+    '7':{
+        'Niveau': {
+            'addr': 45038,
+            'old': None
+        },
+    }
+}
+
 try:
     print("Starting Modbus server and connecting to Hue bridge...")
     server.start()
     print("Modbus server online.")
-    hue = Hue("192.168.69.100")
+    hue = Hue("192.168.69.101")
     print("Connected to Hue bridge")
 
-    groupSetStandOld = None
+    groupSetStandOld1 = None
+    groupSetStandOld2 = None
 
     while True:
 
-        for device, value in setRegisters.items():
+        for device, value in setRegisters1.items():
             for key, value in value.items():
                 current = server.data_bank.get_holding_registers(value['reg'], 1)
                 if value['old'] != current:
@@ -148,15 +267,41 @@ try:
                         hue.set_auto(1, device, current[0])
 
         groupSetStand = server.data_bank.get_holding_registers(42000, 1)
-        if groupSetStand != groupSetStandOld:
+        if groupSetStand != groupSetStandOld1:
             print("Value of groupSetStand changed to: ", groupSetStand)
             hue.set_stand_tunnel(1, groupSetStand[0])
-            groupSetStandOld = groupSetStand
+            groupSetStandOld1 = groupSetStand
 
-        for device, values in getRegisters.items():
+        for device, values in getRegisters1.items():
             for value, properties in values.items():
                 if value == 'Niveau':
                     x = hue.get_stand(1, device)
+                    if x != properties['old']:
+                        print(f"Setting {device}:{value} to {x}")
+                        server.data_bank.set_holding_registers(properties['addr'], [x])
+                        properties['old'] = x;
+
+        for device, value in setRegisters2.items():
+            for key, value in value.items():
+                current = server.data_bank.get_holding_registers(value['reg'], 1)
+                if value['old'] != current:
+                    print(f"Value of {device}:{key} changed to {current}")
+                    value['old'] = current
+                    if key == 'setStand':
+                        hue.set_stand_light(2, device, current[0])
+                    elif key == 'setAuto':
+                        hue.set_auto(2, device, current[0])
+
+        groupSetStand = server.data_bank.get_holding_registers(44000, 1)
+        if groupSetStand != groupSetStandOld2:
+            print("Value of groupSetStand changed to: ", groupSetStand)
+            hue.set_stand_tunnel(2, groupSetStand[0])
+            groupSetStandOld2 = groupSetStand
+
+        for device, values in getRegisters2.items():
+            for value, properties in values.items():
+                if value == 'Niveau':
+                    x = hue.get_stand(2, device)
                     if x != properties['old']:
                         print(f"Setting {device}:{value} to {x}")
                         server.data_bank.set_holding_registers(properties['addr'], [x])
